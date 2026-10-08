@@ -207,41 +207,17 @@ function groupEl(g, pageName) {
   return el;
 }
 
-function flatLinks(items, out = []) {
-  for (const it of items) it.items ? flatLinks(it.items, out) : out.push(it);
-  return out;
-}
-
-let query = '';
 let listEl = null;
 
 function renderList() {
   const page = data.pages[Math.min(ui.page || 0, data.pages.length - 1)] || { name: '', groups: [] };
-  const q = query.trim().toLowerCase();
-  if (!q) {
-    listEl.replaceChildren(...page.groups.map((g) => groupEl(g, page.name)));
-    if (!page.groups.length) listEl.append(h('p', { class: 'empty' }, 'No groups on this page.'));
-    return;
-  }
-  const hits = [];
-  for (const p of data.pages) for (const g of p.groups) for (const it of flatLinks(g.items)) {
-    if ([it.t, it.u, it.d].some((s) => s && s.toLowerCase().includes(q))) hits.push(it);
-  }
-  listEl.replaceChildren(h('section', { class: 'group' },
-    hits.length ? h('div', { class: 'list' }, hits.slice(0, 60).map((it) => linkEl(it, true))) : h('div', { class: 'empty' }, 'No matching links — press Enter to search the web')));
+  listEl.replaceChildren(...page.groups.map((g) => groupEl(g, page.name)));
+  if (!page.groups.length) listEl.append(h('p', { class: 'empty' }, 'No groups on this page.'));
 }
 
 function render(payload) {
   data = payload;
   if (data.accent) document.documentElement.style.setProperty('--accent', data.accent);
-  const input = h('input', { type: 'search', placeholder: 'Search links or the web', enterkeyhint: 'search', autocomplete: 'off', dir: 'auto', value: query });
-  input.addEventListener('input', () => { query = input.value; renderList(); });
-  const form = h('form', { class: 'search', onsubmit: (e) => {
-    e.preventDefault();
-    const q = input.value.trim();
-    if (!q) return;
-    location.href = /^https?:\/\//i.test(q) ? q : /^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(q) ? 'https://' + q : (data.search || 'https://www.google.com/search?q=%s').replace('%s', encodeURIComponent(q));
-  } }, input);
   const tabs = data.pages.length > 1 ? h('nav', { class: 'tabs' }, data.pages.map((p, i) => h('button', {
     type: 'button', class: 'tab' + (i === (ui.page || 0) ? ' on' : ''),
     onclick: () => { ui.page = i; saveUi(); render(data); },
@@ -249,10 +225,7 @@ function render(payload) {
   listEl = h('div');
   const updated = data.at ? new Date(data.at).toLocaleString() : '';
   app.replaceChildren(
-    h('header', { class: 'top' },
-      data.avatar ? h('img', { class: 'avatar', src: iconSrc(data.avatar), alt: '' }) : null,
-      h('div', { class: 'greet', dir: 'auto' }, data.greeting || 'Start')),
-    form, tabs || '', listEl,
+    tabs || '', listEl,
     h('footer', { class: 'foot' },
       updated ? h('span', null, 'Updated ' + updated) : null,
       h('button', { class: 'ghost', type: 'button', onclick: async () => {
