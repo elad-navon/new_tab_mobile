@@ -157,6 +157,8 @@ function linkIcon(it) {
   if (!src) return letterTile(it.t, it.u);
   const img = h('img', { class: 'ico', src, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer' });
   img.addEventListener('error', () => img.replaceWith(letterTile(it.t, it.u)), { once: true });
+  // Google answers unknown sites with a tiny globe, which looks blurry at this size: show a letter instead.
+  if (!it.i) img.addEventListener('load', () => { if (img.naturalWidth <= 16) img.replaceWith(letterTile(it.t, it.u)); }, { once: true });
   return img;
 }
 
