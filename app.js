@@ -250,7 +250,7 @@ function render(payload) {
     h('header', { class: 'top' },
       data.avatar ? h('img', { class: 'avatar', src: iconSrc(data.avatar), alt: '' }) : null,
       h('div', { class: 'greet', dir: 'auto' }, data.greeting || 'Start')),
-    form, tabs, listEl,
+    form, tabs || '', listEl,
     h('footer', { class: 'foot' },
       updated ? h('span', null, 'Updated ' + updated) : null,
       h('button', { class: 'ghost', type: 'button', onclick: async () => {
