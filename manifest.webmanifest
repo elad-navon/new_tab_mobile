@@ -1,0 +1,10 @@
+{
+  "name": "Start",
+  "short_name": "Start",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [{ "src": "icon.png", "sizes": "128x128", "type": "image/png" }]
+}
